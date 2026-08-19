@@ -9,11 +9,13 @@ status = None
 load_dotenv() #loads variables from our .env file
 #we use .env files to store sensitive information like our webhook url so we don't upload it to github by accident!
 WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL")
+USER_ID = os.getenv("DISCORD_USER_ID")
 #we access the .env variables using os.getenv("VARIABLE_NAME")
+
 
 def send_discord_noti():
     data = {
-        "content": f"MATCH FOUND! <t:{timestamp}:R>," # <-- message that will be sent on discord
+        "content": f"MATCH FOUND! <t:{timestamp}:R> <@{USER_ID}>," # <-- message that will be sent on discord
     }
     requests.post(WEBHOOK_URL, json=data)
 
