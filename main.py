@@ -4,6 +4,7 @@ import requests
 import os
 from dotenv import load_dotenv
 
+timestamp = int(time.time())
 status = None
 load_dotenv() #loads variables from our .env file
 #we use .env files to store sensitive information like our webhook url so we don't upload it to github by accident!
@@ -12,7 +13,7 @@ WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL")
 
 def send_discord_noti():
     data = {
-        "content": "Match found!", # <-- message that will be sent on discord
+        "content": f"MATCH FOUND! <t:{timestamp}:R>," # <-- message that will be sent on discord
     }
     requests.post(WEBHOOK_URL, json=data)
 
