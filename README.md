@@ -4,7 +4,7 @@ A lightweight Windows app that detects when your Overwatch queue pops and sends 
 
 Built so I can leave my computer while I'm in queue without missing the start of my match.
 
-For more details on how I built it and why it exists, read the full project write-up on [my website]([https://luzniak.dev/](https://luzniak.dev/blog/ow-queue-monitor)).
+For more details on how I built it and why it exists, read the full project write-up on [my website](https://luzniak.dev/blog/ow-queue-monitor)
 
 ## Download
 
