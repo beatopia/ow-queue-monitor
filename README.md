@@ -4,6 +4,8 @@ A lightweight Windows app that detects when your Overwatch queue pops and sends 
 
 Built so I can leave my computer while I'm in queue without missing the start of my match.
 
+For more details on how I built it and why it exists, read the full project write-up on [my website]([https://luzniak.dev/](https://luzniak.dev/blog/ow-queue-monitor)).
+
 ## Download
 
 **[Download the latest Windows release](https://github.com/beatopia/ow-queue-monitor/releases/latest)**
@@ -70,6 +72,3 @@ pip install -r requirements.txt
 python main.py
 ```
 
-## More Info
-
-For more details on how I built it and why it exists, read the full project write-up on [luzniak.dev](https://luzniak.dev/).
