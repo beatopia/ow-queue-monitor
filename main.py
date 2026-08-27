@@ -2,10 +2,10 @@ import pyautogui as pag #to read pixel colors from the screen
 import time #gives us delay/sleep functions
 import requests #allows us to send http web requests to discord
 import os #lets us interact with the operating system and read env variables
-from dotenv import load_dotenv #loads variables from our .env file
+from dotenv import load_dotenv, set_key #loads variables and lets us save variables to our .env file
 import sys #gives us access to system-level arguments and exit functions
 import threading #allows us to run the queue detector in the background without freezing the ui
-from PyQt6.QtCore import QTimer #a timer to periodically trigger updates in our gui
+from PyQt6.QtCore import Qt, QTimer #imports Qt constants for focus/policies and timer for ui updates
 from PyQt6.QtWidgets import (
     QApplication, #manages the gui application lifecycle
     QWidget, #the base window widget
@@ -50,7 +50,7 @@ def queue_monitor(webhook_url, user_id, stop_event):
     while match_found == False and not stop_event.is_set(): #while we haven't found a match and haven't stopped, keep checking the pixel color
         pixel_color = pag.pixel(946, 37) #reads the rgb color of the pixel at coordinates (x=946, y=37)
 
-        if color_matches(pixel_color, (147, 255, 0), 20): #green color means match was found!
+        if color_matches(pixel_color, (147, 255, 0), 30): #green color means match was found!
             print("Match found!", pixel_color)
 
             send_discord_noti(webhook_url, user_id)
@@ -82,7 +82,11 @@ class QueueDetectorGUI(QWidget):
         super().__init__()
 
         self.setWindowTitle("Overwatch Queue Detector")
-        self.setFixedSize(400, 280) #set a fixed width and height for our window
+        self.setFixedSize(400, 320) #set a fixed width and height for our window
+
+        #take focus away from inputs on startup so text is not auto-highlighted
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        self.setFocus()
 
         #discord user id text input box
         self.user_id_input = QLineEdit()
@@ -91,6 +95,7 @@ class QueueDetectorGUI(QWidget):
         #put .env user id in the box if we already have one saved
         if USER_ID:
             self.user_id_input.setText(USER_ID)
+            self.user_id_input.deselect() #deselect so it isn't highlighted in blue on launch
 
         #discord webhook text input box
         self.webhook_input = QLineEdit()
@@ -99,6 +104,11 @@ class QueueDetectorGUI(QWidget):
         #put .env webhook in the box if we already have one saved
         if WEBHOOK_URL:
             self.webhook_input.setText(WEBHOOK_URL)
+            self.webhook_input.deselect() #deselect so it isn't highlighted in blue on launch
+
+        #save button to manually save credentials to .env file
+        self.save_button = QPushButton("Save")
+        self.save_button.clicked.connect(self.save_settings)
 
         #start button to begin monitoring
         self.start_button = QPushButton("Start Detector")
@@ -122,6 +132,7 @@ class QueueDetectorGUI(QWidget):
 
         layout.addWidget(QLabel("Webhook URL"))
         layout.addWidget(self.webhook_input)
+        layout.addWidget(self.save_button)
 
         layout.addWidget(self.start_button)
         layout.addWidget(self.stop_button)
@@ -137,12 +148,28 @@ class QueueDetectorGUI(QWidget):
         self.status_timer.start(1000) #1000 ms = 1 second
 
 
+    def save_settings(self):
+        user_id = self.user_id_input.text()
+        webhook_url = self.webhook_input.text()
+
+        #manually save the inputs to our .env file
+        set_key(".env", "DISCORD_USER_ID", user_id)
+        set_key(".env", "DISCORD_WEBHOOK_URL", webhook_url)
+
+        global status
+        status = "Saved!"
+        self.status_label.setText("Status: Saved!")
+
     def start_detector(self):
         user_id = self.user_id_input.text()
         webhook_url = self.webhook_input.text()
 
         print("User ID:", user_id)
         print("Webhook:", webhook_url)
+
+        #automatically save what we typed into our .env file so we don't have to retype it next time!
+        set_key(".env", "DISCORD_USER_ID", user_id)
+        set_key(".env", "DISCORD_WEBHOOK_URL", webhook_url)
 
         self.status_label.setText("Status: Monitoring")
 
